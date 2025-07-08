@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Подарок для тебя!</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @keyframes fall {
+            0% {
+                transform: translateY(-100px) rotate(0deg);
+                opacity: 0;
+            }
+            100% {
+                transform: translateY(calc(50vh - 100px)) rotate(360deg);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateY(calc(50vh - 100px)) rotate(0deg); }
+            10%, 30%, 50%, 70%, 90% { transform: translateY(calc(50vh - 100px)) rotate(-5deg); }
+            20%, 40%, 60%, 80% { transform: translateY(calc(50vh - 100px)) rotate(5deg); }
+        }
+        
+        @keyframes heartFall {
+            0% {
+                transform: translateY(-100px) rotate(0deg);
+                opacity: 0;
+            }
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes zoomIn {
+            0% {
+                transform: scale(0.5);
+                opacity: 0;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        
+        .gift-animation {
+            animation: fall 1.5s ease-out forwards, shake 0.5s 1.5s 3 forwards;
+        }
+        
+        .heart {
+            position: absolute;
+            color: red;
+            animation: heartFall linear forwards;
+            pointer-events: none;
+        }
+        
+        .message-box {
+            animation: zoomIn 0.5s ease-out forwards;
+        }
+        
+        .bg-gradient {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+        
+        .sky {
+            position: relative;
+            overflow: hidden;
+            height: 100vh;
+        }
+    </style>
+</head>
+<body class="bg-gradient sky">
+    <div class="container mx-auto px-4 h-screen flex flex-col items-center justify-center relative">
+        <h1 class="text-4xl md:text-6xl font-bold text-center text-pink-600 mb-8 transition-opacity duration-1000" id="title">Приготовься к чуду!</h1>
+        
+        <div id="gift-container" class="relative z-10 mb-20">
+            <!-- Gift will be added here by JavaScript -->
+        </div>
+        
+        <div id="button-container" class="mt-8 opacity-100 z-20">
+            <button id="open-btn" class="bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 px-6 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300 flex items-center cursor-pointer">
+                <i class="fas fa-hand-pointer mr-2"></i> Нажми меня!
+            </button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const giftContainer = document.getElementById('gift-container');
+            const buttonContainer = document.getElementById('button-container');
+            const title = document.getElementById('title');
+            
+            // Create gift element
+            const gift = document.createElement('img');
+            gift.className = 'gift-animation w-48 h-48 object-contain';
+            gift.src = 'подарок.png';
+            gift.alt = 'Подарок';
+            
+            // Add gift to container after short delay
+            setTimeout(() => {
+                giftContainer.appendChild(gift);
+                
+                // Show button immediately
+                buttonContainer.classList.remove('opacity-0');
+                buttonContainer.classList.add('opacity-100');
+            }, 500);
+            
+            // Open gift button
+            const openBtn = document.getElementById('open-btn');
+            openBtn.addEventListener('click', function() {
+                // Hide button and title
+                buttonContainer.classList.remove('opacity-100');
+                buttonContainer.classList.add('opacity-0');
+                title.classList.add('opacity-0');
+                
+                // Replace gift with message
+                setTimeout(() => {
+                    gift.remove();
+                    
+                    const messageBox = document.createElement('div');
+                    messageBox.className = 'message-box bg-white p-8 rounded-xl shadow-2xl max-w-md text-center';
+                    messageBox.innerHTML = `
+                        <h2 class="text-3xl font-bold text-pink-600 mb-4">Ты замечательный!</h2>
+                        <p class="text-gray-700 mb-6 text-lg">Сегодняшний день приготовил для тебя много приятных сюрпризов. Улыбнись и помни - мир становится лучше, когда в нём есть такие люди, как ты!</p>
+                        <div class="text-5xl animate-bounce">😊</div>
+                    `;
+                    giftContainer.appendChild(messageBox);
+                    
+                    // Create hearts
+                    createHearts();
+                }, 500);
+            });
+            
+            // Create falling hearts
+            function createHearts() {
+                const colors = ['#ff0000', '#ff69b4', '#ff1493', '#ff00ff', '#ff6347'];
+                const sky = document.querySelector('.sky');
+                
+                for (let i = 0; i < 50; i++) {
+                    setTimeout(() => {
+                        const heart = document.createElement('div');
+                        heart.className = 'heart';
+                        heart.innerHTML = '<i class="fas fa-heart"></i>';
+                        
+                        // Random properties
+                        const size = Math.random() * 20 + 10;
+                        const left = Math.random() * 100;
+                        const duration = Math.random() * 3 + 2;
+                        const delay = Math.random() * 2;
+                        const color = colors[Math.floor(Math.random() * colors.length)];
+                        
+                        heart.style.left = `${left}%`;
+                        heart.style.fontSize = `${size}px`;
+                        heart.style.animationDuration = `${duration}s`;
+                        heart.style.animationDelay = `${delay}s`;
+                        heart.style.color = color;
+                        
+                        sky.appendChild(heart);
+                        
+                        // Remove heart after animation
+                        setTimeout(() => {
+                            heart.remove();
+                        }, (duration + delay) * 1000);
+                    }, i * 200);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
